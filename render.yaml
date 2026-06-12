@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: ai-agent-production-day12
+    runtime: docker
+    region: singapore
+    plan: free # Sử dụng gói Free miễn phí (không yêu cầu nhập thẻ)
+    healthCheckPath: /health
+    autoDeploy: true
+    rootDir: 06-lab-complete # Đường dẫn đến thư mục chứa Dockerfile và code bài Lab
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: APP_VERSION
+        value: "1.0.0"
+      - key: OPENAI_API_KEY
+        sync: false # Render sẽ hỏi nhập key này (hoặc có thể bỏ trống nếu dùng mock)
+      - key: AGENT_API_KEY
+        value: "my-secret-key-123" # API Key dùng để test bảo mật
+      - key: JWT_SECRET
+        generateValue: true # Render tự tạo chuỗi ngẫu nhiên bảo mật
+      - key: DAILY_BUDGET_USD
+        value: "5.0"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "20"
