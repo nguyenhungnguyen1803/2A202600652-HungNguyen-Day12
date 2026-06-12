@@ -66,8 +66,8 @@ Client (Cổng 80/443)
 
 ## Part 3: Cloud Deployment
 
-### Exercise 3.1: Railway deployment
-- **URL:** [Hãy điền URL Railway của bạn tại đây sau khi deploy thành công]
+### Exercise 3.1: Cloud deployment (Render)
+- **URL:** https://ai-agent-production-day12.onrender.com
 - **Screenshot:** [Screenshots dashboard sẽ được lưu tại: `screenshots/dashboard.png`]
 
 ---
