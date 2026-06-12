@@ -8,4 +8,4 @@ psutil==6.0.0
 requests
 openai
 google-genai
-
+httpx

@@ -211,7 +211,7 @@ class CallbackRequest(BaseModel):
 # Endpoints
 # ─────────────────────────────────────────────────────────
 
-@app.get("/", tags=["Info"])
+@app.get("/api/info", tags=["Info"])
 def root():
     return {
         "app": settings.app_name,
@@ -432,6 +432,38 @@ def _handle_signal(signum, _frame):
     logger.info(json.dumps({"event": "signal", "signum": signum}))
 
 signal.signal(signal.SIGTERM, _handle_signal)
+
+
+# ─────────────────────────────────────────────────────────
+# Frontend Proxy Route
+# ─────────────────────────────────────────────────────────
+import httpx
+
+async_client = httpx.AsyncClient(base_url="http://127.0.0.1:3000")
+
+@app.api_route("/{path_name:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"])
+async def catch_all_proxy(request: Request, path_name: str):
+    url = httpx.URL(path=request.url.path, query=request.url.query.encode("utf-8"))
+    headers = {k: v for k, v in request.headers.items() if k.lower() != "host"}
+    body = await request.body()
+    
+    req = async_client.build_request(
+        method=request.method,
+        url=url,
+        headers=headers,
+        content=body,
+    )
+    
+    try:
+        rp_resp = await async_client.send(req, stream=True)
+        return StreamingResponse(
+            rp_resp.iter_raw(),
+            status_code=rp_resp.status_code,
+            headers=dict(rp_resp.headers),
+        )
+    except Exception as e:
+        logger.error(f"Failed to proxy to frontend: {e}")
+        raise HTTPException(status_code=502, detail="Frontend is currently starting up or offline. Please refresh in a moment.")
 
 
 if __name__ == "__main__":

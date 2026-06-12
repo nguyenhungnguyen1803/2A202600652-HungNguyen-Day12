@@ -6,7 +6,6 @@ services:
     plan: free # Sử dụng gói Free miễn phí (không yêu cầu nhập thẻ)
     healthCheckPath: /health
     autoDeploy: true
-    rootDir: 06-lab-complete # Đường dẫn đến thư mục chứa Dockerfile và code bài Lab
     envVars:
       - key: ENVIRONMENT
         value: production
@@ -22,15 +21,3 @@ services:
         value: "5.0"
       - key: RATE_LIMIT_PER_MINUTE
         value: "20"
-
-  - type: web
-    name: ai-agent-frontend-day12
-    runtime: node
-    region: singapore
-    plan: free
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: node .output/server/index.mjs
-    envVars:
-      - key: VITE_API_BASE_URL
-        value: https://ai-agent-production-day12.onrender.com
