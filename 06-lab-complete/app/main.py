@@ -455,11 +455,13 @@ async def catch_all_proxy(request: Request, path_name: str):
     )
     
     try:
-        rp_resp = await async_client.send(req, stream=True)
-        return StreamingResponse(
-            rp_resp.iter_raw(),
+        rp_resp = await async_client.send(req)
+        exclude_headers = ["connection", "transfer-encoding", "content-length", "keep-alive"]
+        headers = {k: v for k, v in rp_resp.headers.items() if k.lower() not in exclude_headers}
+        return Response(
+            content=rp_resp.content,
             status_code=rp_resp.status_code,
-            headers=dict(rp_resp.headers),
+            headers=headers,
         )
     except Exception as e:
         logger.error(f"Failed to proxy to frontend: {e}")
